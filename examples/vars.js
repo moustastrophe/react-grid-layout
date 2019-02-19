@@ -130,5 +130,13 @@ module.exports = [
     paragraphs: [
       "This demonstrates how to implement a toolbox to add and remove widgets."
     ]
+  },
+  {
+    title: 'Viewport related sizing',
+    source: 'viewport-related',
+    paragraphs: [
+      'This demo shows that the size of grid elements is related to the viewport width.',
+      'Resize the browser window and the sizes of elements are resized in in relation to it!'
+    ]
   }
 ];

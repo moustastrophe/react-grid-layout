@@ -91,6 +91,9 @@ export default class ResponsiveReactGridLayout extends React.Component<
     // Required in this propTypes stanza because generateInitialState() will fail without it.
     width: PropTypes.number.isRequired,
 
+    // Defines the unit to use (using vw, vh will size elements relatively)
+    unit: PropTypes.string,
+
     //
     // Callbacks
     //
@@ -110,6 +113,7 @@ export default class ResponsiveReactGridLayout extends React.Component<
     breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
     cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
     layouts: {},
+    unit: 'px',
     onBreakpointChange: noop,
     onLayoutChange: noop,
     onWidthChange: noop

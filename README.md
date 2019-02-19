@@ -49,6 +49,8 @@ RGL is React-only and does not require jQuery.
 1. [Prevent Collision](https://strml.github.io/react-grid-layout/examples/12-prevent-collision.html)
 1. [Error Case](https://strml.github.io/react-grid-layout/examples/13-error-case.html)
 1. [Toolbox](https://strml.github.io/react-grid-layout/examples/14-toolbox.html)
+1. [Viewport related element sizing](https://strml.github.io/react-grid-layout/examples/15-viewport-related.html)
+1. [Viewport related element sizing in a responsive layout](https://strml.github.io/react-grid-layout/examples/16-viewport-related-responsive.html)
 
 #### Projects Using React-Grid-Layout
 
@@ -284,6 +286,9 @@ containerPadding: ?[number, number] = margin,
 // if you like.
 rowHeight: ?number = 150,
 
+// Defines the unit to use (using vw, vh will size elements relatively)
+unit: PropTypes.string,
+
 //
 // Flags
 //
@@ -341,7 +346,10 @@ cols: ?Object = {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
 
 // layouts is an object mapping breakpoints to layouts.
 // e.g. {lg: Layout, md: Layout, ...}
-layouts: {[key: $Keys<breakpoints>]: Layout}
+layouts: {[key: $Keys<breakpoints>]: Layout},
+
+// Defines the unit to use (using vw, vh will size elements relatively)
+unit: PropTypes.string,
 
 //
 // Callbacks
@@ -357,6 +365,8 @@ onLayoutChange: (currentLayout: Layout, allLayouts: {[key: $Keys<breakpoints>]: 
 // Callback when the width changes, so you can modify the layout as needed.
 onWidthChange: (containerWidth: number, margin: [number, number], cols: number, containerPadding: [number, number]) => void;
 
+// Defines the unit to use (using vw, vh will size elements relatively)
+unit: PropTypes.string
 ```
 
 ### Grid Item Props
@@ -399,7 +409,10 @@ will be draggable.
   // If false, will not be draggable. Overrides `static`.
   isDraggable: ?boolean = true,
   // If false, will not be resizable. Overrides `static`.
-  isResizable: ?boolean = true
+  isResizable: ?boolean = true,
+  
+  // Defines the unit to use (using vw, vh will size elements relatively)
+  unit: PropTypes.string
 }
 ```
 
