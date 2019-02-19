@@ -212,7 +212,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     containerPadding: null,
     rowHeight: 150,
     maxRows: Infinity, // infinite vertical growth
-    unit: 'px',
+    unit: "px",
     layout: [],
     margin: [10, 10],
     isDraggable: true,
@@ -308,7 +308,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       nbRow * this.props.rowHeight +
       (nbRow - 1) * this.props.margin[1] +
       containerPaddingY * 2 +
-      this.props.unit"
+      this.props.unit
     );
   }
 
@@ -536,7 +536,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       containerPadding,
       rowHeight,
       maxRows,
-      useCSSTransforms, 
+      useCSSTransforms,
       unit
     } = this.props;
 
@@ -558,7 +558,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         isDraggable={false}
         isResizable={false}
         useCSSTransforms={useCSSTransforms}
-        unit={unit}>
+        unit={unit}
+      >
         <div />
       </GridItem>
     );
@@ -584,7 +585,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       isResizable,
       useCSSTransforms,
       draggableCancel,
-      draggableHandle, 
+      draggableHandle,
       unit
     } = this.props;
     const { mounted } = this.state;
@@ -628,7 +629,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         maxW={l.maxW}
         static={l.static}
         unit={unit}
-        >
+      >
         {child}
       </GridItem>
     );
