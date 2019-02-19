@@ -56,6 +56,7 @@ export type Props = {
   containerPadding: [number, number] | null,
   rowHeight: number,
   maxRows: number,
+  unit: string,
   isDraggable: boolean,
   isResizable: boolean,
   preventCollision: boolean,

@@ -58,6 +58,7 @@ type Props = {
   y: number,
   w: number,
   h: number,
+  unit: string,
 
   minW: number,
   maxW: number,
