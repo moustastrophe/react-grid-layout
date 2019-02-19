@@ -68,6 +68,7 @@
     "jest-cli": "^22.3.0",
     "lint-staged": "^6.1.0",
     "lodash": "^4.17.5",
+    "make": "^0.8.1",
     "opener": "^1.4.3",
     "prettier": "^1.10.2",
     "react": "^16.2.0",
