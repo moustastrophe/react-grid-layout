@@ -74,12 +74,15 @@ var ResponsiveReactGridLayout = function (_React$Component) {
     // Get the initial layout. This can tricky; we try to generate one however possible if one doesn't exist
     // for this layout.
     var initialLayout = (0, _responsiveUtils.findOrGenerateResponsiveLayout)(layouts, breakpoints, breakpoint, breakpoint, colNo, compactType);
-
-    return {
+    var initState = {
       layout: initialLayout,
       breakpoint: breakpoint,
-      cols: colNo
+      cols: colNo,
+      width: width
     };
+    // Callback onInit
+    this.props.onInit(initState);
+    return initState;
   };
 
   ResponsiveReactGridLayout.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
@@ -156,7 +159,8 @@ var ResponsiveReactGridLayout = function (_React$Component) {
         onBreakpointChange = _props2.onBreakpointChange,
         onLayoutChange = _props2.onLayoutChange,
         onWidthChange = _props2.onWidthChange,
-        other = _objectWithoutProperties(_props2, ["breakpoint", "breakpoints", "cols", "layouts", "onBreakpointChange", "onLayoutChange", "onWidthChange"]);
+        onInit = _props2.onInit,
+        other = _objectWithoutProperties(_props2, ["breakpoint", "breakpoints", "cols", "layouts", "onBreakpointChange", "onLayoutChange", "onWidthChange", "onInit"]);
     /* eslint-enable no-unused-vars */
 
     return _react2.default.createElement(_ReactGridLayout2.default, _extends({}, other, {
@@ -218,7 +222,10 @@ ResponsiveReactGridLayout.propTypes = {
   onLayoutChange: _propTypes2.default.func,
 
   // Calls back with (containerWidth, margin, cols, containerPadding)
-  onWidthChange: _propTypes2.default.func
+  onWidthChange: _propTypes2.default.func,
+
+  // Calls back at the end of generateInitalState() with the initial state
+  onInit: _propTypes2.default.func
 };
 ResponsiveReactGridLayout.defaultProps = {
   breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
@@ -227,6 +234,7 @@ ResponsiveReactGridLayout.defaultProps = {
   unit: 'px',
   onBreakpointChange: _utils.noop,
   onLayoutChange: _utils.noop,
-  onWidthChange: _utils.noop
+  onWidthChange: _utils.noop,
+  onInit: _utils.noop
 };
 exports.default = ResponsiveReactGridLayout;
