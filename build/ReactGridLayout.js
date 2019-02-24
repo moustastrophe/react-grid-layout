@@ -69,6 +69,9 @@ var ReactGridLayout = function (_React$Component) {
     // Allow parent to set layout directly.
     if (!(0, _lodash2.default)(nextProps.layout, this.props.layout) || nextProps.compactType !== this.props.compactType) {
       newLayoutBase = nextProps.layout;
+    } else if (!(0, _lodash2.default)(nextProps.layout, this.state.layout)) {
+      // When props are out of sync with the state
+      newLayoutBase = nextProps.layout;
     } else if (!(0, _utils.childrenEqual)(this.props.children, nextProps.children)) {
       // If children change, also regenerate the layout. Use our state
       // as the base in case because it may be more up to date than
