@@ -23,7 +23,8 @@ const type = obj => Object.prototype.toString.call(obj);
 type State = {
   layout: Layout,
   breakpoint: string,
-  cols: number
+  cols: number,
+  width: number
 };
 
 type Props<Breakpoint: string = string> = {
@@ -44,7 +45,8 @@ type Props<Breakpoint: string = string> = {
     margin: [number, number],
     cols: number,
     containerPadding: [number, number] | null
-  ) => void
+  ) => void,
+  onInit: State => void
 };
 
 export default class ResponsiveReactGridLayout extends React.Component<
@@ -106,7 +108,10 @@ export default class ResponsiveReactGridLayout extends React.Component<
     onLayoutChange: PropTypes.func,
 
     // Calls back with (containerWidth, margin, cols, containerPadding)
-    onWidthChange: PropTypes.func
+	onWidthChange: PropTypes.func,
+
+	// Calls back at the end of generateInitalState() with the initial state
+	onInit: PropTypes.func
   };
 
   static defaultProps = {
@@ -116,7 +121,8 @@ export default class ResponsiveReactGridLayout extends React.Component<
     unit: 'px',
     onBreakpointChange: noop,
     onLayoutChange: noop,
-    onWidthChange: noop
+	onWidthChange: noop,
+	onInit: noop
   };
 
   state = this.generateInitialState();
@@ -137,13 +143,16 @@ export default class ResponsiveReactGridLayout extends React.Component<
       breakpoint,
       colNo,
       compactType
-    );
-
-    return {
-      layout: initialLayout,
-      breakpoint: breakpoint,
-      cols: colNo
-    };
+	);
+	const initState: State = {
+		layout: initialLayout,
+		breakpoint: breakpoint,
+		cols: colNo,
+		width: width
+	};
+	// Callback onInit
+	this.props.onInit(initState);
+    return initState
   }
 
   componentWillReceiveProps(nextProps: Props<*>) {
@@ -253,7 +262,8 @@ export default class ResponsiveReactGridLayout extends React.Component<
       layouts,
       onBreakpointChange,
       onLayoutChange,
-      onWidthChange,
+	  onWidthChange,
+	  onInit,
       ...other
     } = this.props;
     /* eslint-enable no-unused-vars */
