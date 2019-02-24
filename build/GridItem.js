@@ -241,10 +241,11 @@ var GridItem = function (_React$Component) {
    */
 
 
-  GridItem.prototype.mixinDraggable = function mixinDraggable(child) {
+  GridItem.prototype.mixinDraggable = function mixinDraggable(child, isDraggable) {
     return _react2.default.createElement(
       _reactDraggable.DraggableCore,
       {
+        disabled: !isDraggable,
         onStart: this.onDragHandler("onDragStart"),
         onDrag: this.onDragHandler("onDrag"),
         onStop: this.onDragHandler("onDragStop"),
@@ -263,7 +264,7 @@ var GridItem = function (_React$Component) {
    */
 
 
-  GridItem.prototype.mixinResizable = function mixinResizable(child, position) {
+  GridItem.prototype.mixinResizable = function mixinResizable(child, position, isResizable) {
     var _props6 = this.props,
         cols = _props6.cols,
         x = _props6.x,
@@ -305,6 +306,10 @@ var GridItem = function (_React$Component) {
     return _react2.default.createElement(
       _reactResizable.Resizable,
       {
+        draggableOpts: {
+          disabled: !isResizable
+        },
+        className: isResizable ? undefined : "react-resizable-hide",
         width: position.width,
         height: position.height,
         minConstraints: minConstraints,
@@ -467,10 +472,10 @@ var GridItem = function (_React$Component) {
     });
 
     // Resizable support. This is usually on but the user can toggle it off.
-    if (isResizable) newChild = this.mixinResizable(newChild, pos);
+    newChild = this.mixinResizable(newChild, pos, isResizable);
 
     // Draggable support. This is always on, except for with placeholders.
-    if (isDraggable) newChild = this.mixinDraggable(newChild);
+    newChild = this.mixinDraggable(newChild, isDraggable);
 
     return newChild;
   };
