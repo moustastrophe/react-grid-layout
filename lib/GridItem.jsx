@@ -337,9 +337,13 @@ export default class GridItem extends React.Component<Props, State> {
    * @param  {Element} child    Child element.
    * @return {Element}          Child wrapped in Draggable.
    */
-  mixinDraggable(child: ReactElement<any>): ReactElement<any> {
+  mixinDraggable(
+    child: ReactElement<any>,
+    isDraggable: boolean
+  ): ReactElement<any> {
     return (
       <DraggableCore
+        disabled={!isDraggable}
         onStart={this.onDragHandler("onDragStart")}
         onDrag={this.onDragHandler("onDrag")}
         onStop={this.onDragHandler("onDragStop")}
@@ -362,7 +366,8 @@ export default class GridItem extends React.Component<Props, State> {
    */
   mixinResizable(
     child: ReactElement<any>,
-    position: Position
+    position: Position,
+    isResizable: boolean
   ): ReactElement<any> {
     const { cols, x, minW, minH, maxW, maxH, unit } = this.props;
     const viewPortSize = getViewportSize(unit);
@@ -399,6 +404,10 @@ export default class GridItem extends React.Component<Props, State> {
 
     return (
       <Resizable
+        draggableOpts={{
+          disabled: !isResizable
+        }}
+        className={isResizable ? undefined : "react-resizable-hide"}
         width={position.width}
         height={position.height}
         minConstraints={minConstraints}
@@ -547,10 +556,10 @@ export default class GridItem extends React.Component<Props, State> {
     });
 
     // Resizable support. This is usually on but the user can toggle it off.
-    if (isResizable) newChild = this.mixinResizable(newChild, pos);
+    newChild = this.mixinResizable(newChild, pos, isResizable);
 
     // Draggable support. This is always on, except for with placeholders.
-    if (isDraggable) newChild = this.mixinDraggable(newChild);
+    newChild = this.mixinDraggable(newChild, isDraggable);
 
     return newChild;
   }
