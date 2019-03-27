@@ -352,6 +352,15 @@ layouts: {[key: $Keys<breakpoints>]: Layout},
 unit: PropTypes.string,
 
 //
+// Flags
+//
+
+// Define the target element which width is measured for breakpoints handler
+// false - get width of the layout component
+// true - get width of the viewport (window)
+breakpointFromViewport: ?boolean = false
+
+//
 // Callbacks
 //
 
