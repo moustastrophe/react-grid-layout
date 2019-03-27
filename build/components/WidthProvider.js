@@ -112,7 +112,8 @@ function WidthProvider(ComposedComponent) {
           )),
           _this)),
           (_this.state = {
-            width: 1280
+            width: 1280,
+            viewportWidth: 1280
           }),
           (_this.mounted = false),
           (_this.iframe = null),
@@ -121,6 +122,12 @@ function WidthProvider(ComposedComponent) {
             var node = _reactDom2.default.findDOMNode(_this); // Flow casts this to Text | Element
             if (node instanceof HTMLElement) {
               _this.setState({ width: _this.iframe.offsetWidth });
+            }
+            if (
+              _this.props.breakpointFromViewport &&
+              typeof window !== "undefined"
+            ) {
+              _this.setState({ viewportWidth: window.innerWidth });
             }
           }),
           (_this.saveIframe = function(iframe) {
@@ -191,12 +198,14 @@ function WidthProvider(ComposedComponent) {
       return WidthProvider;
     })(_react2.default.Component)),
     (_class.defaultProps = {
-      measureBeforeMount: false
+      measureBeforeMount: false,
+      breakpointFromViewport: false
     }),
     (_class.propTypes = {
       // If true, will not render children until mounted. Useful for getting the exact width before
       // rendering, to prevent any unsightly resizing.
-      measureBeforeMount: _propTypes2.default.bool
+      measureBeforeMount: _propTypes2.default.bool,
+      breakpointFromViewport: _propTypes2.default.bool
     }),
     _temp2
   );

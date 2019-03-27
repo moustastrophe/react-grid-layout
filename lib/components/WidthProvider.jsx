@@ -70,7 +70,6 @@ export default function WidthProvider<
       if (node instanceof HTMLElement) {
         this.setState({ width: this.iframe.offsetWidth });
       }
-      }
       if (this.props.breakpointFromViewport && typeof window !== "undefined") {
         this.setState({ viewportWidth: window.innerWidth });
       }
