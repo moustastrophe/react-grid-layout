@@ -8,7 +8,8 @@ type WPProps = {
   className?: string,
   measureBeforeMount: boolean,
   style?: Object,
-  breakpointFromViewport: boolean
+  breakpointFromViewport: boolean,
+  resizeDelay: number
 };
 
 type WPState = {
@@ -25,17 +26,19 @@ export default function WidthProvider<
 >(
   ComposedComponent: ReactComponentType<Props>
 ): ReactComponentType<ComposedProps> {
-  return class WidthProvider extends React.Component<ComposedProps, WPState> {
+  class WidthProvider extends React.Component<ComposedProps, WPState> {
     static defaultProps = {
       measureBeforeMount: false,
-      breakpointFromViewport: false
+      breakpointFromViewport: false,
+      resizeDelay: 0
     };
 
     static propTypes = {
       // If true, will not render children until mounted. Useful for getting the exact width before
       // rendering, to prevent any unsightly resizing.
       measureBeforeMount: PropTypes.bool,
-      breakpointFromViewport: PropTypes.bool
+      breakpointFromViewport: PropTypes.bool,
+      resizeDelay: PropTypes.number
     };
 
     state = {
@@ -45,6 +48,7 @@ export default function WidthProvider<
 
     mounted: boolean = false;
     iframe: ?HTMLIFrameElement = null;
+    resizeTimeout: ?TimeoutID = null;
 
     componentDidMount() {
       this.mounted = true;
@@ -65,14 +69,27 @@ export default function WidthProvider<
     }
 
     onIframeResize = (_event: ?Event) => {
+      const { resizeDelay } = this.props;
+
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => {
+        this.calculateWidth();
+      }, resizeDelay);
+    };
+
+    calculateWidth = () => {
       if (!this.mounted) return;
+
+      let newState = {};
       const node = ReactDOM.findDOMNode(this); // Flow casts this to Text | Element
       if (node instanceof HTMLElement) {
-        this.setState({ width: this.iframe.offsetWidth });
+        newState.width = this.iframe.offsetWidth;
       }
       if (this.props.breakpointFromViewport && typeof window !== "undefined") {
-        this.setState({ viewportWidth: window.innerWidth });
+        newState.viewportWidth = window.innerWidth;
       }
+
+      if (Object.keys(newState).length) this.setState(newState);
     };
 
     saveIframe = (iframe: HTMLIFrameElement) => {
@@ -107,5 +124,9 @@ export default function WidthProvider<
         </span>
       );
     }
-  };
+  }
+
+  return React.forwardRef((props, ref) => {
+    return <WidthProvider {...props} forwardedRef={ref} />;
+  });
 }
