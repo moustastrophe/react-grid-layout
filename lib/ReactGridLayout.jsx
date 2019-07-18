@@ -50,7 +50,7 @@ export type Props = {
   draggableCancel: string,
   draggableHandle: string,
   verticalCompact: boolean,
-  compactType: ?("horizontal" | "vertical"),
+  compactType: CompactType,
   layout: Layout,
   margin: [number, number],
   containerPadding: [number, number] | null,
@@ -61,6 +61,9 @@ export type Props = {
   isResizable: boolean,
   preventCollision: boolean,
   useCSSTransforms: boolean,
+
+  collisonResolver: Function,
+  compactor: Function,
 
   // Callbacks
   onLayoutChange: Layout => void,
@@ -160,6 +163,12 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     useCSSTransforms: PropTypes.bool,
 
     //
+    // Custom collison resolution and compacting
+    //
+    collisonResolver: PropTypes.oneOfType([PropTypes.func]),
+    compactor: PropTypes.oneOfType([PropTypes.func]),
+
+    //
     // Callbacks
     //
 
@@ -222,6 +231,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     verticalCompact: true,
     compactType: "vertical",
     preventCollision: false,
+    collisonResolver: moveElement,
+    compactor: compact,
     onLayoutChange: noop,
     onDragStart: noop,
     onDrag: noop,
@@ -275,12 +286,12 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     ) {
       newLayoutBase = nextProps.layout;
     } else if (!isEqual(nextProps.layout, this.state.layout)) {
-    // When props are out of sync with the state
+      // When props are out of sync with the state
       newLayoutBase = nextProps.layout;
     } else if (!childrenEqual(this.props.children, nextProps.children)) {
-    // If children change, also regenerate the layout. Use our state
-    // as the base in case because it may be more up to date than
-    // what is in props.
+      // If children change, also regenerate the layout. Use our state
+      // as the base in case because it may be more up to date than
+      // what is in props.
       newLayoutBase = this.state.layout;
     }
 
@@ -353,12 +364,18 @@ export default class ReactGridLayout extends React.Component<Props, State> {
   onDrag(i: string, x: number, y: number, { e, node }: GridDragEvent) {
     const { oldDragItem } = this.state;
     let { layout } = this.state;
-    const { cols } = this.props;
-    var l = getLayoutItem(layout, i);
+    const {
+      collisonResolver,
+      preventCollision,
+      cols,
+      onDrag,
+      compactor
+    } = this.props;
+    const l = getLayoutItem(layout, i);
     if (!l) return;
 
     // Create placeholder (display only)
-    var placeholder = {
+    const placeholder = {
       w: l.w,
       h: l.h,
       x: l.x,
@@ -369,21 +386,21 @@ export default class ReactGridLayout extends React.Component<Props, State> {
 
     // Move the element to the dragged location.
     const isUserAction = true;
-    layout = moveElement(
+    layout = collisonResolver(
       layout,
       l,
       x,
       y,
       isUserAction,
-      this.props.preventCollision,
+      preventCollision,
       this.compactType(),
       cols
     );
 
-    this.props.onDrag(layout, oldDragItem, l, placeholder, e, node);
+    onDrag(layout, oldDragItem, l, placeholder, e, node);
 
     this.setState({
-      layout: compact(layout, this.compactType(), cols),
+      layout: compactor(layout, this.compactType(), cols),
       activeDrag: placeholder
     });
   }
@@ -399,13 +416,19 @@ export default class ReactGridLayout extends React.Component<Props, State> {
   onDragStop(i: string, x: number, y: number, { e, node }: GridDragEvent) {
     const { oldDragItem } = this.state;
     let { layout } = this.state;
-    const { cols, preventCollision } = this.props;
+    const {
+      collisonResolver,
+      cols,
+      preventCollision,
+      onDragStop,
+      compactor
+    } = this.props;
     const l = getLayoutItem(layout, i);
     if (!l) return;
 
     // Move the element here
     const isUserAction = true;
-    layout = moveElement(
+    layout = collisonResolver(
       layout,
       l,
       x,
@@ -416,10 +439,10 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       cols
     );
 
-    this.props.onDragStop(layout, oldDragItem, l, null, e, node);
+    onDragStop(layout, oldDragItem, l, null, e, node);
 
     // Set state
-    const newLayout = compact(layout, this.compactType(), cols);
+    const newLayout = compactor(layout, this.compactType(), cols);
     const { oldLayout } = this.state;
     this.setState({
       activeDrag: null,
@@ -440,7 +463,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
 
   onResizeStart(i: string, w: number, h: number, { e, node }: GridResizeEvent) {
     const { layout } = this.state;
-    var l = getLayoutItem(layout, i);
+    const l = getLayoutItem(layout, i);
     if (!l) return;
 
     this.setState({
@@ -453,7 +476,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
 
   onResize(i: string, w: number, h: number, { e, node }: GridResizeEvent) {
     const { layout, oldResizeItem } = this.state;
-    const { cols, preventCollision } = this.props;
+    const { cols, preventCollision, compactor } = this.props;
     const l: ?LayoutItem = getLayoutItem(layout, i);
     if (!l) return;
 
@@ -501,20 +524,20 @@ export default class ReactGridLayout extends React.Component<Props, State> {
 
     // Re-compact the layout and set the drag placeholder.
     this.setState({
-      layout: compact(layout, this.compactType(), cols),
+      layout: compactor(layout, this.compactType(), cols),
       activeDrag: placeholder
     });
   }
 
   onResizeStop(i: string, w: number, h: number, { e, node }: GridResizeEvent) {
     const { layout, oldResizeItem } = this.state;
-    const { cols } = this.props;
+    const { cols, compactor } = this.props;
     var l = getLayoutItem(layout, i);
 
     this.props.onResizeStop(layout, oldResizeItem, l, null, e, node);
 
     // Set state
-    const newLayout = compact(layout, this.compactType(), cols);
+    const newLayout = compactor(layout, this.compactType(), cols);
     const { oldLayout } = this.state;
     this.setState({
       activeDrag: null,
